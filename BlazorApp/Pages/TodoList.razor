@@ -1,0 +1,57 @@
+﻿@page "/todo"
+
+<h3>TodoList</h3>
+@if (todoItems.Count > 0)
+{
+    <div class="progress my-2">
+        <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-vlaue="100" style="width:@(donePercentage)%">@donePercentage</div>
+    </div>
+}
+<EditForm Model="@newItem" OnValidSubmit="AddTask" class="form-inline my-2">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <InputText class="form-control mx-2" @bind-Value="newItem.TaskName"></InputText>
+    <button class="btn btn-primary pull-right" type="submit">Add Task</button>
+</EditForm>
+
+@if (todoItems.Count > 0)
+{
+    <ul class="list-group">
+        @foreach (var item in todoItems)
+        {
+            if (item.IsComplete)
+            {
+                <li class="list-group-item list-group-item-secondary my-2 " @onclick="()=>item.IsComplete = !item.IsComplete">
+                    <del>
+                        @item.TaskName
+                    </del>
+                </li>
+
+            }
+            else
+            {
+                <li class="list-group-item list-group-item-success my-2 " @onclick="()=>item.IsComplete = !item.IsComplete">@item.TaskName</li>
+            }
+        }
+    </ul>
+}
+
+@code {
+
+
+    private List<TodoItem> todoItems = new List<TodoItem>();
+    private TodoItem newItem = new TodoItem();
+    private double donePercentage
+    {
+        get
+        {
+            return todoItems.Count(x => x.IsComplete) * 100 / todoItems.Count;
+        }
+    }
+
+    public void AddTask()
+    {
+        todoItems.Add(newItem);
+        newItem = new TodoItem();
+    }
+}
